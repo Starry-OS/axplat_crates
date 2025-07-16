@@ -16,7 +16,7 @@ unsafe fn init_boot_page_table() {
     unsafe {
         let l1_va = va!(&raw const BOOT_PT_L1 as usize);
         // 0x0000_0000_0000 ~ 0x0080_0000_0000, table
-        BOOT_PT_L0[0] = LA64PTE::new_table(axplat::mem::virt_to_phys(l1_va));
+        BOOT_PT_L0[0x100] = LA64PTE::new_table(axplat::mem::virt_to_phys(l1_va));
         // 0x0000_0000..0x4000_0000, VPWXGD, 1G block
         BOOT_PT_L1[0] = LA64PTE::new_page(
             pa!(0),
@@ -58,13 +58,6 @@ fn init_mmu() {
 #[unsafe(link_section = ".text.boot")]
 unsafe extern "C" fn _start() -> ! {
     core::arch::naked_asm!("
-        ori         $t0, $zero, 0x1     # CSR_DMW1_PLV0
-        lu52i.d     $t0, $t0, -2048     # UC, PLV0, 0x8000 xxxx xxxx xxxx
-        csrwr       $t0, 0x180          # LOONGARCH_CSR_DMWIN0
-        ori         $t0, $zero, 0x11    # CSR_DMW1_MAT | CSR_DMW1_PLV0
-        lu52i.d     $t0, $t0, -1792     # CA, PLV0, 0x9000 xxxx xxxx xxxx
-        csrwr       $t0, 0x181          # LOONGARCH_CSR_DMWIN1
-
         # Setup Stack
         la.global   $sp, {boot_stack}
         li.d        $t0, {boot_stack_size}
@@ -95,12 +88,6 @@ unsafe extern "C" fn _start() -> ! {
 #[unsafe(link_section = ".text.boot")]
 unsafe extern "C" fn _start_secondary() -> ! {
     core::arch::naked_asm!("
-        ori          $t0, $zero, 0x1     # CSR_DMW1_PLV0
-        lu52i.d      $t0, $t0, -2048     # UC, PLV0, 0x8000 xxxx xxxx xxxx
-        csrwr        $t0, 0x180          # LOONGARCH_CSR_DMWIN0
-        ori          $t0, $zero, 0x11    # CSR_DMW1_MAT | CSR_DMW1_PLV0
-        lu52i.d      $t0, $t0, -1792     # CA, PLV0, 0x9000 xxxx xxxx xxxx
-        csrwr        $t0, 0x181          # LOONGARCH_CSR_DMWIN1
         la.abs       $t0, {sm_boot_stack_top}
         ld.d         $sp, $t0,0          # read boot stack top
 
