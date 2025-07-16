@@ -36,5 +36,9 @@ repository = "https://github.com/arceos-org/axplat_crates"
 
 [workspace.dependencies]
 axcpu = "0.2"
-axplat = { version = "0.1.0", path = "./axplat" }
-axplat-macros = { version = "0.1.0", path = "./axplat-macros" }
+axplat = "0.1.0"
+axplat-macros = "0.1.0"
+
+[patch.crates-io]
+axplat = { path = "./axplat" }
+axplat-macros = { path = "./axplat-macros" }
