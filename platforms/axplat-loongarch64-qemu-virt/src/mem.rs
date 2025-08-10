@@ -1,4 +1,4 @@
-use axplat::mem::{MemIf, PhysAddr, RawRange, VirtAddr, pa, va};
+use axplat::mem::{MemIf, PAGE_SIZE_4K, PhysAddr, RawRange, VirtAddr, pa, va};
 
 use crate::config::devices::MMIO_RANGES;
 use crate::config::plat::{PHYS_MEMORY_BASE, PHYS_MEMORY_SIZE, PHYS_VIRT_OFFSET};
@@ -17,7 +17,16 @@ impl MemIf for MemIfImpl {
     /// All memory ranges except reserved ranges (including the kernel loaded
     /// range) are free for allocation.
     fn phys_ram_ranges() -> &'static [RawRange] {
-        &[(PHYS_MEMORY_BASE, PHYS_MEMORY_SIZE)]
+        // 256 MiB
+        const LOWRAM_SIZE: usize = 0x1000_0000;
+        if PHYS_MEMORY_SIZE <= LOWRAM_SIZE {
+            &[(PAGE_SIZE_4K, PHYS_MEMORY_SIZE - PAGE_SIZE_4K)]
+        } else {
+            &[
+                (PAGE_SIZE_4K, LOWRAM_SIZE - PAGE_SIZE_4K),
+                (PHYS_MEMORY_BASE, PHYS_MEMORY_SIZE - LOWRAM_SIZE),
+            ]
+        }
     }
 
     /// Returns all reserved physical memory ranges on the platform.
