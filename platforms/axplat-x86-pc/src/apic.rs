@@ -129,7 +129,6 @@ mod irq_impl {
                 Self::set_enable(vector, true);
                 return true;
             }
-            warn!("register handler for IRQ {} failed", vector);
             false
         }
 

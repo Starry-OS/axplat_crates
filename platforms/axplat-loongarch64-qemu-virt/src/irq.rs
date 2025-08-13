@@ -1,13 +1,31 @@
 use axplat::irq::{HandlerTable, IrqHandler, IrqIf};
+use lazyinit::LazyInit;
 use loongArch64::register::{
     ecfg::{self, LineBasedInterrupt},
     ticlr,
 };
 
+use crate::{
+    config::{
+        devices::{PLATIC_BASE, PLATIC_INTERRUPT},
+        plat::{self, CPU_NUM},
+    },
+    mem::phys_to_virt,
+};
+
+mod eiointc;
+mod platic;
+
 /// The maximum number of IRQs.
-pub const MAX_IRQ_COUNT: usize = 12;
+pub const MAX_IRQ_COUNT: usize = 0x20;
 
 static IRQ_HANDLER_TABLE: HandlerTable<MAX_IRQ_COUNT> = HandlerTable::new();
+
+static INIT: LazyInit<()> = LazyInit::new();
+fn init() {
+    eiointc::init();
+    platic::init();
+}
 
 struct IrqIfImpl;
 
@@ -22,6 +40,16 @@ impl IrqIf for IrqIfImpl {
                 false => old_value & !LineBasedInterrupt::TIMER,
             };
             ecfg::set_lie(new_value);
+        } else {
+            INIT.call_once(init);
+
+            if enabled {
+                eiointc::enable_irq(irq_num);
+                platic::enable_irq(irq_num);
+            } else {
+                eiointc::disable_irq(irq_num);
+                platic::disable_irq(irq_num);
+            }
         }
     }
 
@@ -31,7 +59,6 @@ impl IrqIf for IrqIfImpl {
             Self::set_enable(irq_num, true);
             return true;
         }
-        warn!("register handler for IRQ {} failed", irq_num);
         false
     }
 
@@ -52,6 +79,12 @@ impl IrqIf for IrqIfImpl {
     fn handle(irq: usize) {
         if irq == crate::config::devices::TIMER_IRQ {
             ticlr::clear_timer_interrupt();
+        } else if irq == PLATIC_INTERRUPT {
+            if let Some(irq) = eiointc::claim_irq() {
+                IRQ_HANDLER_TABLE.handle(irq);
+                eiointc::complete_irq(irq);
+            }
+            return;
         }
         trace!("IRQ {}", irq);
         if !IRQ_HANDLER_TABLE.handle(irq) {

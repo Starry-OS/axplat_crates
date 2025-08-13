@@ -21,7 +21,9 @@ smp = ["axplat/smp"]
 log = "0.4"
 riscv = "0.14"
 sbi-rt = { version = "0.0.3", features = ["legacy"] }
+plic = { git = "https://github.com/os-module/plic.git", rev = "1a71425" }
 riscv_goldfish = { version = "0.1", optional = true }
+lazyinit = "0.2"
 
 axconfig-macros = "0.2"
 axcpu = { workspace = true }

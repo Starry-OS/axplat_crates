@@ -39,6 +39,7 @@ boot-stack-size = 0x40000                       # uint
 [devices]
 # MMIO ranges with format (`base_paddr`, `size`).
 mmio-ranges = [
+    [0x1000_0000, 0x0000_0400],         # PIC
     [0x100D_0000, 0x0000_1000],         # RTC
     [0x100E_0000, 0x0000_1000],         # GED
     [0x1FE0_0000, 0x0000_1000],         # UART
@@ -84,3 +85,7 @@ timer-irq = 11                          # uint
 
 # RTC (ls7a) Address
 rtc-paddr = 0x100d_0100                 # uint
+
+platic-interrupt = 3
+platic-base = 0x10000000
+eiointc-base = 0x1400
