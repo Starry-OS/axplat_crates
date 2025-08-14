@@ -1,9 +1,7 @@
-//! TODO: PLIC
-
-use crate::config::{devices::PLIC_BASE, plat::CPU_NUM};
+use crate::config::{devices::PLIC_PADDR, plat::CPU_NUM};
 use axplat::{
     irq::{HandlerTable, IrqHandler, IrqIf},
-    mem::phys_to_virt,
+    mem::{pa, phys_to_virt},
 };
 use core::sync::atomic::{AtomicPtr, Ordering};
 use lazyinit::LazyInit;
@@ -33,7 +31,7 @@ static IRQ_HANDLER_TABLE: HandlerTable<MAX_IRQ_COUNT> = HandlerTable::new();
 static PLIC: LazyInit<PLIC<CPU_NUM>> = LazyInit::new();
 
 fn init_plic() -> PLIC<CPU_NUM> {
-    let plic = PLIC::new(phys_to_virt(PLIC_BASE.into()).as_usize(), [2; CPU_NUM]);
+    let plic = PLIC::new(phys_to_virt(pa!(PLIC_PADDR)).as_usize(), [2; CPU_NUM]);
     for hart in 0..(CPU_NUM as u32) {
         plic.set_threshold(hart, Mode::Supervisor, 0);
     }

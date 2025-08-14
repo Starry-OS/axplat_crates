@@ -5,13 +5,7 @@ use loongArch64::register::{
     ticlr,
 };
 
-use crate::{
-    config::{
-        devices::{PLATIC_BASE, PLATIC_INTERRUPT},
-        plat::{self, CPU_NUM},
-    },
-    mem::phys_to_virt,
-};
+use crate::config::devices::{PLATIC_INTERRUPT, TIMER_IRQ};
 
 mod eiointc;
 mod platic;
@@ -33,7 +27,7 @@ struct IrqIfImpl;
 impl IrqIf for IrqIfImpl {
     /// Enables or disables the given IRQ.
     fn set_enable(irq_num: usize, enabled: bool) {
-        if irq_num == crate::config::devices::TIMER_IRQ {
+        if irq_num == TIMER_IRQ {
             let old_value = ecfg::read().lie();
             let new_value = match enabled {
                 true => old_value | LineBasedInterrupt::TIMER,

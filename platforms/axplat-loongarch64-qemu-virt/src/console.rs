@@ -1,13 +1,12 @@
-use crate::mem::phys_to_virt;
-use axplat::mem::{PhysAddr, pa};
+use axplat::console::ConsoleIf;
 use kspin::SpinNoIrq;
 use ns16550a::Uart;
 
-const UART_BASE: PhysAddr = pa!(crate::config::devices::UART_PADDR);
+use crate::config::{devices::UART_PADDR, plat::PHYS_VIRT_OFFSET};
 
-static UART: SpinNoIrq<Uart> = SpinNoIrq::new(Uart::new(phys_to_virt(UART_BASE).as_usize()));
+const UART_BASE: usize = PHYS_VIRT_OFFSET + UART_PADDR;
 
-use axplat::console::ConsoleIf;
+static UART: SpinNoIrq<Uart> = SpinNoIrq::new(Uart::new(UART_BASE));
 
 struct ConsoleIfImpl;
 
@@ -32,12 +31,20 @@ impl ConsoleIf for ConsoleIfImpl {
     /// Reads bytes from the console into the given mutable slice.
     /// Returns the number of bytes read.
     fn read_bytes(bytes: &mut [u8]) -> usize {
+        let uart = UART.lock();
         for (i, byte) in bytes.iter_mut().enumerate() {
-            match UART.lock().get() {
+            match uart.get() {
                 Some(c) => *byte = c,
                 None => return i,
             }
         }
         bytes.len()
+    }
+
+    fn enable_rx_interrupt() -> Option<usize> {
+        unsafe {
+            ((UART_BASE + 1) as *mut u8).write_volatile(1);
+        }
+        Some(crate::config::devices::UART_INTERRUPT)
     }
 }

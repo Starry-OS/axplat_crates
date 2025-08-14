@@ -1,9 +1,6 @@
 // Ref: https://elixir.bootlin.com/linux/v6.16/source/drivers/irqchip/irq-loongson-eiointc.c
 
-use loongArch64::iocsr::{
-    iocsr_read_b, iocsr_read_d, iocsr_read_w, iocsr_write_b, iocsr_write_d, iocsr_write_h,
-    iocsr_write_w,
-};
+use loongArch64::iocsr::{iocsr_read_d, iocsr_write_d, iocsr_write_w};
 
 const LOONGARCH_IOCSR_MISC_FUNC: usize = 0x420;
 const IOCSR_MISC_FUNC_EXT_IOI_EN: u64 = 1 << 48;
@@ -21,7 +18,7 @@ const VEC_COUNT: usize = VEC_REG_COUNT * VEC_COUNT_PER_REG;
 
 pub fn init() {
     // TODO: support smp
-    let mut misc = iocsr_read_d(LOONGARCH_IOCSR_MISC_FUNC);
+    let misc = iocsr_read_d(LOONGARCH_IOCSR_MISC_FUNC);
     iocsr_write_d(LOONGARCH_IOCSR_MISC_FUNC, misc | IOCSR_MISC_FUNC_EXT_IOI_EN);
 
     let index = 0;

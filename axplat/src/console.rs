@@ -12,6 +12,14 @@ pub trait ConsoleIf {
     ///
     /// Returns the number of bytes read.
     fn read_bytes(bytes: &mut [u8]) -> usize;
+
+    /// Enables console input interrupts.
+    ///
+    /// Returns `Some(irq)` if this platform supports this operation, where
+    /// `irq` is the IRQ number that will be triggered on incoming data.
+    fn enable_rx_interrupt() -> Option<usize> {
+        None
+    }
 }
 
 struct EarlyConsole;
