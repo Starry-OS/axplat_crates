@@ -1,4 +1,9 @@
-use axplat::init::InitIf;
+use axplat::{
+    init::InitIf,
+    mem::{pa, phys_to_virt},
+};
+
+use crate::config::devices::{RTC_PADDR, UART_PADDR};
 
 struct InitIfImpl;
 
@@ -9,7 +14,9 @@ impl InitIf for InitIfImpl {
     /// early console, clocking).
     fn init_early(_cpu_id: usize, _mbi: usize) {
         axcpu::init::init_trap();
-        crate::time::init_early();
+        axplat_riscv64_common::console::init_early(phys_to_virt(pa!(UART_PADDR)));
+        #[cfg(feature = "rtc")]
+        axplat_riscv64_common::time::init_early(phys_to_virt(pa!(RTC_PADDR)));
     }
 
     /// Initializes the platform at the early stage for secondary cores.
@@ -25,15 +32,18 @@ impl InitIf for InitIfImpl {
     /// platform configuration and initialization.
     fn init_later(_cpu_id: usize, _arg: usize) {
         #[cfg(feature = "irq")]
-        crate::irq::init_percpu();
-        crate::time::init_percpu();
+        {
+            crate::irq::init_plic();
+            axplat_riscv64_common::irq::init_percpu();
+        }
+        axplat_riscv64_common::time::init_percpu();
     }
 
     /// Initializes the platform at the later stage for secondary cores.
     #[cfg(feature = "smp")]
     fn init_later_secondary(_cpu_id: usize) {
         #[cfg(feature = "irq")]
-        crate::irq::init_percpu();
-        crate::time::init_percpu();
+        axplat_riscv64_common::irq::init_percpu();
+        axplat_riscv64_common::time::init_percpu();
     }
 }

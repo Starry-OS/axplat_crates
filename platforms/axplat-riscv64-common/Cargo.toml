@@ -1,9 +1,9 @@
 [package]
-name = "axplat-riscv64-qemu-virt"
+name = "axplat-riscv64-common"
 version = "0.1.0"
-description = "Implementation of `axplat` hardware abstraction layer for QEMU RISC-V virt board."
-documentation = "https://docs.rs/axplat-riscv64-qemu-virt"
-keywords = ["arceos", "os", "hal", "embedded", "riscv"]
+description = "RISC-V common codes with `axplat` compatibility"
+documentation = "https://docs.rs/axplat-riscv64-common"
+keywords = ["arceos", "os", "hal", "riscv64"]
 categories = ["embedded", "no-std", "hardware-support", "os"]
 edition.workspace = true
 authors.workspace = true
@@ -12,18 +12,22 @@ homepage.workspace = true
 repository.workspace = true
 
 [features]
-fp-simd = ["axcpu/fp-simd"]
-irq = ["axplat/irq", "axplat-riscv64-common/irq"]
-rtc = ["axplat-riscv64-common/rtc"]
-smp = ["axplat/smp"]
+irq = ["axplat/irq"]
+rtc = ["riscv_goldfish"]
 
 [dependencies]
+kspin = "0.1"
+lazyinit = "0.2"
+log = "0.4"
+ns16550a = "0.5.0"
 plic = { git = "https://github.com/Starry-Mix-THU/plic.git", rev = "ee40f86" }
+riscv = "0.14"
+riscv_goldfish = { version = "0.1", optional = true }
+sbi-rt = { version = "0.0.3", features = ["legacy"] }
 
 axconfig-macros = "0.2"
 axcpu = { workspace = true }
 axplat = { workspace = true }
-axplat-riscv64-common = { version = "0.1", path = "../axplat-riscv64-common" }
 
 [package.metadata.docs.rs]
 targets = ["riscv64gc-unknown-none-elf"]

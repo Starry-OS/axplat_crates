@@ -1,18 +1,14 @@
 #![no_std]
 
 #[macro_use]
-extern crate log;
-#[macro_use]
 extern crate axplat;
 
 mod boot;
-mod console;
 mod init;
 #[cfg(feature = "irq")]
 mod irq;
 mod mem;
 mod power;
-mod time;
 
 pub mod config {
     //! Platform configuration module.
@@ -28,3 +24,6 @@ pub mod config {
         "`PACKAGE` field in the configuration does not match the Package name. Please check your configuration file."
     );
 }
+
+axplat_riscv64_common::console_if_impl!(ConsoleIfImpl);
+axplat_riscv64_common::time_if_impl!(TimeIfImpl, config::devices::TIMER_FREQUENCY);

@@ -41,10 +41,10 @@ impl ConsoleIf for ConsoleIfImpl {
         bytes.len()
     }
 
-    fn enable_rx_interrupt() -> Option<usize> {
-        unsafe {
-            ((UART_BASE + 1) as *mut u8).write_volatile(1);
-        }
-        Some(crate::config::devices::UART_INTERRUPT)
-    }
+    // fn enable_rx_interrupt() -> Option<usize> {
+    //     unsafe {
+    //         ((UART_BASE + 1) as *mut u8).write_volatile(1);
+    //     }
+    //     Some(crate::config::devices::UART_INTERRUPT)
+    // }
 }
