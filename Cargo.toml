@@ -16,6 +16,7 @@ members = [
 
     "platforms/axplat-riscv64-common",
     "platforms/axplat-riscv64-qemu-virt",
+    "platforms/axplat-riscv64-visionfive2",
 
     "platforms/axplat-loongarch64-qemu-virt",
 

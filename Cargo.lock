@@ -274,6 +274,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "axplat-riscv64-visionfive2"
+version = "0.1.0"
+dependencies = [
+ "axconfig-macros",
+ "axcpu",
+ "axplat",
+ "axplat-riscv64-common",
+ "plic",
+]
+
+[[package]]
 name = "axplat-x86-pc"
 version = "0.1.1"
 dependencies = [

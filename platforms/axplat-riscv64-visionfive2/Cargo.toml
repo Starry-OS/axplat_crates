@@ -1,0 +1,28 @@
+[package]
+name = "axplat-riscv64-visionfive2"
+version = "0.1.0"
+description = "Implementation of `axplat` hardware abstraction layer for Vision Five 2 board."
+documentation = "https://docs.rs/axplat-riscv64-visionfive2"
+keywords = ["arceos", "os", "hal", "embedded", "riscv"]
+categories = ["embedded", "no-std", "hardware-support", "os"]
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+homepage.workspace = true
+repository.workspace = true
+
+[features]
+irq = ["axplat/irq", "axplat-riscv64-common/irq"]
+rtc = ["axplat-riscv64-common/rtc"]
+smp = ["axplat/smp"]
+
+[dependencies]
+plic = { git = "https://github.com/Starry-Mix-THU/plic.git", rev = "ee40f86" }
+
+axconfig-macros = "0.2"
+axcpu = { workspace = true }
+axplat = { workspace = true }
+axplat-riscv64-common = { version = "0.1", path = "../axplat-riscv64-common" }
+
+[package.metadata.docs.rs]
+targets = ["riscv64gc-unknown-none-elf"]
