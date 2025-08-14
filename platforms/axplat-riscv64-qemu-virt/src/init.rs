@@ -3,7 +3,7 @@ use axplat::{
     mem::{pa, phys_to_virt},
 };
 
-use crate::config::devices::{RTC_PADDR, UART_PADDR};
+use crate::config::devices::{RTC_PADDR, UART_INTERRUPT, UART_PADDR};
 
 struct InitIfImpl;
 
@@ -15,6 +15,7 @@ impl InitIf for InitIfImpl {
     fn init_early(_cpu_id: usize, _mbi: usize) {
         axcpu::init::init_trap();
         axplat_riscv64_common::console::init_early(phys_to_virt(pa!(UART_PADDR)));
+        axplat::console::init_console_irq(UART_INTERRUPT);
         #[cfg(feature = "rtc")]
         axplat_riscv64_common::time::init_early(phys_to_virt(pa!(RTC_PADDR)));
     }

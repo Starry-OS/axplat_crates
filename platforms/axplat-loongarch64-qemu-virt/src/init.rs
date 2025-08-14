@@ -1,4 +1,9 @@
-use axplat::init::InitIf;
+use axplat::{
+    init::InitIf,
+    mem::{pa, phys_to_virt},
+};
+
+use crate::config::devices::{UART_INTERRUPT, UART_PADDR};
 
 struct InitIfImpl;
 
@@ -9,6 +14,8 @@ impl InitIf for InitIfImpl {
     /// early console, clocking).
     fn init_early(_cpu_id: usize, _mbi: usize) {
         axcpu::init::init_trap();
+        crate::console::init_early(phys_to_virt(pa!(UART_PADDR)));
+        axplat::console::init_console_irq(UART_INTERRUPT);
         crate::time::init_early();
     }
 

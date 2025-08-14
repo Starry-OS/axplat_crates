@@ -1,4 +1,4 @@
-use axplat::mem::pa;
+use axplat::mem::{pa, phys_to_virt};
 use axplat::power::PowerIf;
 
 struct PowerImpl;
@@ -17,11 +17,10 @@ impl PowerIf for PowerImpl {
 
     /// Shutdown the whole system.
     fn system_off() -> ! {
-        const HALT_ADDR: *mut u8 =
-            crate::mem::phys_to_virt(pa!(crate::config::devices::GED_PADDR)).as_mut_ptr();
+        let halt_addr = phys_to_virt(pa!(crate::config::devices::GED_PADDR)).as_mut_ptr();
 
         info!("Shutting down...");
-        unsafe { HALT_ADDR.write_volatile(0x34) };
+        unsafe { halt_addr.write_volatile(0x34) };
         axcpu::asm::halt();
         warn!("It should shutdown!");
         loop {

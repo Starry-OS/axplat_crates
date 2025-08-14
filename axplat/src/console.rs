@@ -1,6 +1,9 @@
 //! Console input and output.
 
-use core::fmt::{Arguments, Result, Write};
+use core::{
+    fmt::{Arguments, Result, Write},
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 /// Console input and output interface.
 #[def_plat_interface]
@@ -48,4 +51,15 @@ pub fn __simple_print(fmt: Arguments) {
     let _guard = CONSOLE_LOCK.lock();
     EarlyConsole.write_fmt(fmt).unwrap();
     drop(_guard);
+}
+
+static CONSOLE_IRQ: AtomicUsize = AtomicUsize::new(0);
+
+pub fn init_console_irq(irq: usize) {
+    CONSOLE_IRQ.store(irq, Ordering::Relaxed);
+}
+
+pub fn get_console_irq() -> Option<usize> {
+    let irq = CONSOLE_IRQ.load(Ordering::Relaxed);
+    if irq != 0 { Some(irq) } else { None }
 }

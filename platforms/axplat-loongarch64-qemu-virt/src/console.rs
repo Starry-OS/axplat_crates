@@ -1,12 +1,16 @@
-use axplat::console::ConsoleIf;
+use axplat::{console::ConsoleIf, mem::VirtAddr};
 use kspin::SpinNoIrq;
+use lazyinit::LazyInit;
 use ns16550a::Uart;
 
-use crate::config::{devices::UART_PADDR, plat::PHYS_VIRT_OFFSET};
+static UART: LazyInit<SpinNoIrq<Uart>> = LazyInit::new();
 
-const UART_BASE: usize = PHYS_VIRT_OFFSET + UART_PADDR;
-
-static UART: SpinNoIrq<Uart> = SpinNoIrq::new(Uart::new(UART_BASE));
+pub fn init_early(uart_base: VirtAddr) {
+    UART.init_once(SpinNoIrq::new(Uart::new(uart_base.as_usize())));
+    unsafe {
+        uart_base.as_mut_ptr().byte_add(1).write_volatile(1);
+    }
+}
 
 struct ConsoleIfImpl;
 
