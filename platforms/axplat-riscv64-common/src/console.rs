@@ -1,29 +1,30 @@
 use axplat::mem::VirtAddr;
 use kspin::SpinNoIrq;
 use lazyinit::LazyInit;
-use ns16550a::Uart;
+use uart_16550::MmioSerialPort;
 
-static UART: LazyInit<SpinNoIrq<Uart>> = LazyInit::new();
+static UART: LazyInit<SpinNoIrq<MmioSerialPort>> = LazyInit::new();
 
 /// Early stage initialization of the 16550 UART driver.
 pub fn init_early(uart_base: VirtAddr) {
-    UART.init_once(SpinNoIrq::new(Uart::new(uart_base.as_usize())));
-    unsafe {
-        uart_base.as_mut_ptr().byte_add(1).write_volatile(1);
-    }
+    UART.init_once(SpinNoIrq::new({
+        let mut uart = unsafe { MmioSerialPort::new(uart_base.as_usize()) };
+        uart.init();
+        uart
+    }));
 }
 
 /// Writes bytes to the console from input u8 slice.
 pub fn write_bytes(bytes: &[u8]) {
     for &c in bytes {
-        let uart = UART.lock();
+        let mut uart = UART.lock();
         match c {
             b'\n' => {
-                let _ = uart.put(b'\r');
-                let _ = uart.put(b'\n');
+                uart.send(b'\r');
+                uart.send(b'\n');
             }
             c => {
-                let _ = uart.put(c);
+                uart.send(c);
             }
         }
     }
@@ -32,11 +33,11 @@ pub fn write_bytes(bytes: &[u8]) {
 /// Reads bytes from the console into the given mutable slice.
 /// Returns the number of bytes read.
 pub fn read_bytes(bytes: &mut [u8]) -> usize {
-    let uart = UART.lock();
+    let mut uart = UART.lock();
     for (i, byte) in bytes.iter_mut().enumerate() {
-        match uart.get() {
-            Some(c) => *byte = c,
-            None => return i,
+        match uart.try_receive() {
+            Ok(c) => *byte = c,
+            Err(_) => return i,
         }
     }
     bytes.len()

@@ -3,7 +3,9 @@ use axplat::{
     mem::{pa, phys_to_virt},
 };
 
-use crate::config::devices::{RTC_PADDR, UART_INTERRUPT, UART_PADDR};
+#[cfg(feature = "rtc")]
+use crate::config::devices::RTC_PADDR;
+use crate::config::devices::{UART_INTERRUPT, UART_PADDR};
 
 struct InitIfImpl;
 

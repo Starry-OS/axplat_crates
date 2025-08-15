@@ -255,11 +255,11 @@ dependencies = [
  "kspin",
  "lazyinit",
  "log",
- "ns16550a",
  "plic",
  "riscv",
  "riscv_goldfish",
  "sbi-rt",
+ "uart_16550 0.4.0",
 ]
 
 [[package]]
@@ -282,6 +282,7 @@ dependencies = [
  "axplat",
  "axplat-riscv64-common",
  "plic",
+ "sbi-rt",
 ]
 
 [[package]]
@@ -300,7 +301,7 @@ dependencies = [
  "multiboot",
  "percpu",
  "raw-cpuid 11.5.0",
- "uart_16550",
+ "uart_16550 0.3.2",
  "x2apic",
  "x86",
  "x86_64",
@@ -1302,6 +1303,17 @@ name = "uart_16550"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e492212ac378a5e00da953718dafb1340d9fbaf4f27d6f3c5cab03d931d1c049"
+dependencies = [
+ "bitflags 2.9.1",
+ "rustversion",
+ "x86",
+]
+
+[[package]]
+name = "uart_16550"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "94d293f51425981fdb1b766beae254dbb711a17e8c4b549dc69b9b7ee0d478d5"
 dependencies = [
  "bitflags 2.9.1",
  "rustversion",

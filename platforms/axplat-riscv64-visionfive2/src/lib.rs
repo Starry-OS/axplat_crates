@@ -4,6 +4,7 @@
 extern crate axplat;
 
 mod boot;
+mod console;
 mod init;
 #[cfg(feature = "irq")]
 mod irq;
@@ -25,5 +26,5 @@ pub mod config {
     );
 }
 
-axplat_riscv64_common::console_if_impl!(ConsoleIfImpl);
+// axplat_riscv64_common::console_if_impl!(ConsoleIfImpl);
 axplat_riscv64_common::time_if_impl!(TimeIfImpl, config::devices::TIMER_FREQUENCY);

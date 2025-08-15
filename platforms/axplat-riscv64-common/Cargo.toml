@@ -19,11 +19,11 @@ rtc = ["riscv_goldfish"]
 kspin = "0.1"
 lazyinit = "0.2"
 log = "0.4"
-ns16550a = "0.5.0"
 plic = { git = "https://github.com/Starry-Mix-THU/plic.git", rev = "ee40f86" }
 riscv = "0.14"
 riscv_goldfish = { version = "0.1", optional = true }
 sbi-rt = { version = "0.0.3", features = ["legacy"] }
+uart_16550 = "0.4"
 
 axconfig-macros = "0.2"
 axcpu = { workspace = true }

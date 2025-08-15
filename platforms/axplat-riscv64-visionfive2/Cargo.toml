@@ -18,6 +18,7 @@ smp = ["axplat/smp"]
 
 [dependencies]
 plic = { git = "https://github.com/Starry-Mix-THU/plic.git", rev = "ee40f86" }
+sbi-rt = { version = "0.0.3", features = ["legacy"] }
 
 axconfig-macros = "0.2"
 axcpu = { workspace = true }
