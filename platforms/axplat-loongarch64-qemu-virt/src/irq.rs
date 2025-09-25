@@ -55,7 +55,7 @@ impl IrqIf for IrqIfImpl {
         }
         trace!("IRQ {}", irq);
         if !IRQ_HANDLER_TABLE.handle(irq) {
-            warn!("Unhandled IRQ {}", irq);
+            warn!("Unhandled IRQ {irq}");
         }
     }
 
