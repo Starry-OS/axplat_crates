@@ -8,6 +8,12 @@ use plic::{Mode, PLIC};
 use riscv::register::sie;
 use sbi_rt::HartMask;
 
+static TISH_CPU_ID_FUNC: AtomicPtr<()> = AtomicPtr::new(core::ptr::null_mut());
+
+pub fn register_this_cpu_id(func: fn() -> usize) {
+    TISH_CPU_ID_FUNC.store(func as *mut (), Ordering::Relaxed);
+}
+
 /// `Interrupt` bit in `scause`
 pub(super) const INTC_IRQ_BASE: usize = 1 << (usize::BITS - 1);
 
@@ -189,8 +195,10 @@ impl IrqIf for IrqIfImpl {
                 }
             },
             @S_EXT => {
-                // TODO: hart
-                let irq = PLIC.claim(0, Mode::Supervisor);
+                let hart = unsafe {
+                    core::mem::transmute::<*mut (), fn() -> usize>(TISH_CPU_ID_FUNC.load(Ordering::Relaxed))()
+                } as u32;
+                let irq = PLIC.claim(hart, Mode::Supervisor);
                 if !IRQ_HANDLER_TABLE.handle(irq as _) {
                     debug!("Unhandled IRQ {irq}");
                 }
