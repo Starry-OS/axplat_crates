@@ -153,6 +153,7 @@ dependencies = [
  "crate_interface",
  "kspin",
  "memory_addr",
+ "percpu",
 ]
 
 [[package]]
