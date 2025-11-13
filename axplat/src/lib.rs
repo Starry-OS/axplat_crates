@@ -6,7 +6,7 @@
 extern crate axplat_macros;
 
 pub mod console;
-pub mod hart;
+pub mod cpu;
 pub mod init;
 #[cfg(feature = "irq")]
 pub mod irq;

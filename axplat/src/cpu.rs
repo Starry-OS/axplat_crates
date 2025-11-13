@@ -5,7 +5,7 @@ static CPU_ID: usize = 0;
 static IS_BSP: bool = false;
 
 /// Returns the ID of the current CPU.
-#[unsafe(no_mangle)]
+#[inline]
 pub fn this_cpu_id() -> usize {
     CPU_ID.read_current()
 }
