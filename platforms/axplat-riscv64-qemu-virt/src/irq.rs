@@ -189,8 +189,8 @@ impl IrqIf for IrqIfImpl {
                 }
             },
             @S_EXT => {
-                // TODO: hart
-                let irq = PLIC.claim(0, Mode::Supervisor);
+                let hart = axplat::hart::this_cpu_id() as u32;
+                let irq = PLIC.claim(hart, Mode::Supervisor);
                 if !IRQ_HANDLER_TABLE.handle(irq as _) {
                     debug!("Unhandled IRQ {irq}");
                 }
