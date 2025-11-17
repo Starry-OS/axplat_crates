@@ -17,7 +17,7 @@ pub fn this_cpu_is_bsp() -> bool {
     IS_BSP.read_current()
 }
 
-/// Initializes the current hart (CPU core) information.
+/// Initializes the current cpu information.
 pub fn init(cpu_id: usize, is_bsp: bool) {
     unsafe {
         CPU_ID.write_current_raw(cpu_id);
