@@ -20,6 +20,7 @@ lazyinit = "0.2"
 page_table_entry = "0.5"
 aarch64-cpu = "10.0"
 arm_pl011 = "0.1"
+uart_16550 = "0.4"
 arm-gic-driver = { git = "https://github.com/Starry-OS/arm-gic-driver.git", rev = "2e33925" }
 arm_pl031 = "0.2"
 axcpu = { workspace = true }
